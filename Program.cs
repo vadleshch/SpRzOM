@@ -3,84 +3,81 @@ using System.Diagnostics;
 using System.Text;
 using static SpRzOM.Long;
 
-//Long RandomLong(int len)
-//{
-//    Random r = new Random();
-//    Long A = new Long("0");
-//    int bits = len % 32;
-//    int words = len / 32;
-//    for (int i = 1; i < words; i++)
-//    {
-//        A.Number.Add(0);
-//    }
-//    for (int i = 0; i < A.Number.Count - 1; i++)
-//    {
-//        A.Number[i] = r.NextInt64() & 0xffffffff;
-//    }
-//    A.Number[A.Number.Count - 1] = (r.NextInt64() & 0xffffffff) >> 32 - bits;
-//    return A;
-//}
+Long RandomLong(int len)
+{
+    Random r = new Random();
+    Long A = new Long("0");
+    int bits = len % 32;
+    int words = len / 32;
+    for (int i = 1; i < words; i++)
+    {
+        A.Number.Add(0);
+    }
+    for (int i = 0; i < A.Number.Count - 1; i++)
+    {
+        A.Number[i] = r.NextInt64() & 0xffffffff;
+    }
+    A.Number[A.Number.Count - 1] = (r.NextInt64() & 0xffffffff) >> 32 - bits;
+    return A;
+}
 
 
-//void MainTimers()
-//{
-//    Long res = new Long();
-//    Stopwatch sw1 = new Stopwatch();
-//    Stopwatch sw2 = new Stopwatch();
-//    Stopwatch sw3 = new Stopwatch();
-//    Stopwatch sw4 = new Stopwatch();
-//    sw1.Start();
-//    Long[,] Dataset = new Long[10, 20001];
-//    for (int i = 0; i < 10; i++)
-//    {
-//        for (int j = 0; j < 20001; j++)
-//        {
-//            Dataset[i, j] = RandomLong((i + 1) * 100);
-//        }
-//    }
-//    sw1.Stop();
-//    Console.WriteLine(sw1.ElapsedMilliseconds);
-//    sw1.Reset();
-//    for (int i = 0; i < 10; i++)
-//    {
-//        sw1.Start();
-//        for (int j = 0; j < 20000; j++)
-//        {
-//            res = Dataset[i, j] + Dataset[i, j + 1];
-//        }
-//        sw1.Stop();
-//        sw2.Start();
-//        for (int j = 0; j < 20000; j++)
-//        {
-//            res = Dataset[i, j] - Dataset[i, j + 1];
-//        }
-//        sw2.Stop();
-//        sw3.Start();
-//        for (int j = 0; j < 20000; j++)
-//        {
-//            res = Dataset[i, j] * Dataset[i, j + 1];
-//        }
-//        sw3.Stop();
-//        sw4.Start();
-//        for (int j = 0; j < 20000; j++)
-//        {
-//            res = Dataset[i, j] / Dataset[i, j + 1];
-//        }
-//        sw4.Stop();
-//        Console.WriteLine($"{(i + 1) * 100}: + {sw1.ElapsedMilliseconds} - {sw2.ElapsedMilliseconds} * {sw3.ElapsedMilliseconds} / {sw4.ElapsedMilliseconds}");
-//        sw1.Reset(); sw2.Reset(); sw3.Reset(); sw4.Reset();
-//        sw4.Start();
-//        for (int j = 0; j < 20000; j++)
-//        {
-//            res = Dataset[i, j] / new Long("f");
-//        }
-//        sw4.Stop();
-//        Console.WriteLine($"/f  {sw4.ElapsedMilliseconds}");
-//        sw4.Reset();
-//    }
-//}
+void MainTimers()
+{
+    Long res = new Long();
+    Stopwatch sw1 = new Stopwatch();
+    Stopwatch sw2 = new Stopwatch();
+    Stopwatch sw3 = new Stopwatch();
+    Stopwatch sw4 = new Stopwatch();
+    sw1.Start();
+    Long[,] Dataset = new Long[10, 201];
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 201; j++)
+        {
+            Dataset[i, j] = RandomLong((i + 1) * 100);
+        }
+    }
+    sw1.Stop();
+    Console.WriteLine(sw1.ElapsedMilliseconds);
+    sw1.Reset();
 
-//MainTimers();
+    for (int i = 0; i < 10; i++)
+    {
+        Long gcd;
+        Long lcm;
+        Long u;
+        Long v;
+        sw1.Start();
+        for (int j = 0; j < 200; j++)
+        {
+           (gcd, lcm, u, v) = Euclid(Dataset[i, j], Dataset[i, j + 1]);
+        }
+        sw1.Stop();
+        sw2.Start();
+        for (int j = 0; j < 200; j++)
+        {
+            gcd = Bingcd(Dataset[i, j], Dataset[i, j + 1]);
+        }
+        sw2.Stop();
+        //sw3.Start();
+        //for (int j = 0; j < 20000; j++)
+        //{
+        //    res = Dataset[i, j] * Dataset[i, j + 1];
+        //}
+        //sw3.Stop();
+        //sw4.Start();
+        //for (int j = 0; j < 20000; j++)
+        //{
+        //    res = Dataset[i, j] / Dataset[i, j + 1];
+        //}
+        //sw4.Stop();
+        Console.WriteLine($"{(i + 1) * 100}: Euclid {sw1.ElapsedMilliseconds} Bin {sw2.ElapsedMilliseconds}");
+        sw1.Reset(); sw2.Reset(); sw3.Reset(); sw4.Reset();
+    }
+}
+
+MainTimers();
 
 Console.WriteLine("1 - Lab1; 2 - Lab2");
 Long A;
@@ -157,14 +154,18 @@ try
                 Long lcm;
                 Long u;
                 Long v;
-                Console.WriteLine("Уведіть шістнадцяткове А:");
-                Console.Write(">");
-                str = Console.ReadLine();
+                Long M;
+                Long D;
+                //Console.WriteLine("Уведіть шістнадцяткове А:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                str = "8692D3FE302469AE8984488668D86530CEA78D23172AD0F8AE0B7864545F3189FA50F90EBD40071BD5B0D1B9ADF82EEEA121138B95DF363CF89469980F23D61F50E16DB91DF15E86B1870E719FD710B3783A217F78E1560A1130E49FCD9C9AD0E0190EF0D27E841B70BD05BF666697E80A5882AB6DAD4B625BB01F755E2E981A";
                 A = new Long(str, 16);
                 Console.WriteLine(A.HexToString());
-                Console.WriteLine("Уведіть шістнадцяткове B:");
-                Console.Write(">");
-                str = Console.ReadLine();
+                //Console.WriteLine("Уведіть шістнадцяткове B:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                str = "1A32BA32AD1F22E2E43535524CC668C570A471534664AC4CFBAC765EE7E902152571DA2B7347BEC45EBBAE7054E2F8C7227FB7F60AD9ACE7D3ED9DA24E92BB49A844D92F3DED8ECCFF053C83A57C25F5D10C9A85C94C78E4D29071FFEE27035698B768286B6B15DF003A5F53571055D83FE18DE0D00AC295F4BF4D08B668C83F";
                 B = new Long(str, 16);
                 (gcd, lcm, u, v) = Euclid(A, B, true);
                 Console.WriteLine("gcd: ");
@@ -175,6 +176,27 @@ try
                 Console.WriteLine(u.HexToString());
                 Console.WriteLine("v: ");
                 Console.WriteLine(v.HexToString());
+                //Console.WriteLine("Уведіть шістнадцяткове M:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                str = "7E0DD5863122AC09C282D526BF37EE9641127ECCDD09B29552057FADFEB8FDCD2FC937C7D563E0335890D1C4DF34DC202B7461352C98D12135C92533492EBBA07F5038B1950235C2418F9DA2B1B1CA5E49F2D68BF4B5779E70E5981F5DBFC2CE41C9363A98CEE65B17E2F2D2287DF76298B4869ADEC8F2327CBD5AA138D8EBAB";
+                M = new Long(str, 16);
+                Console.Write("(A+B)modM=");
+                D = ModAdd(A, B, M);
+                Console.WriteLine(D.HexToString());
+                Console.Write("(A-B)modM=");
+                D = ModSub(A, B, M);
+                Console.WriteLine(D.HexToString());
+                Console.Write("(A*B)modM=");
+                D = ModMul(A, B, M);
+                Console.WriteLine(D.HexToString());
+                Console.Write("A^2modM=");
+                D = ModSqr(A, M);
+                Console.WriteLine(D.HexToString());
+                Console.Write("A^BmodM=");
+                D = ModDegree(A, B, M);
+                Console.WriteLine(D.HexToString());
+                return;
             }
             //break;
         default:

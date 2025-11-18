@@ -1,13 +1,10 @@
-﻿using System;
-using System.Diagnostics.Contracts;
-
-
+﻿
 namespace SpRzOM
 {
 
-    internal sealed class Long
+    public sealed class Long
     {
-        private List<long> Number = new List<long>();
+        public List<long> Number = new List<long>();
         private bool Negative = false;
         public Long(string str = "", int s = 16)
         {
@@ -209,20 +206,37 @@ namespace SpRzOM
             Long res = new Long();
             int words = n / 32;
             int bits = n % 32;
-            ulong carry = 0;
             ulong temp;
+            if (words >= A.Number.Count)
+            {
+                res.Number.Add(0);
+                return res;
+            }
+            if (bits == 0)
+            {
+                for (int i = words; i < A.Number.Count; i++)
+                {
+                    res.Number.Add(A.Number[i]);
+                }
+                return RemoveEmpty(res);
+            }
             for (int i = words; i < A.Number.Count; i++)
             {
-                temp = (ulong)A.Number[i];
-                temp = (temp >> bits) | carry;
-                carry = ((ulong)A.Number[i] << (32 - bits)) & 0xFFFFFFFFUL;
-                res.Number.Add((long)temp & 0xFFFFFFFFL);
+                ulong cur = (ulong)A.Number[i];
+                ulong cur2 = 0UL;
+                if (i + 1 < A.Number.Count)
+                {
+                    cur2 = (ulong)A.Number[i + 1];
+                }
+                temp = (cur >> bits) | ((cur2 << (32 - bits)) & 0xFFFFFFFFUL);
+                res.Number.Add((long)(temp & 0xFFFFFFFFUL));
             }
-            return res;
+            return RemoveEmpty(res);
         }
 
         public static Long operator <<(Long A, int n)
         {
+
             Long res = new Long();
             int words = n / 32;
             int bits = n % 32;
@@ -548,6 +562,101 @@ namespace SpRzOM
             }
             lcm = A * B / gcd;
             return (gcd, lcm, u, v);
+        }
+        public static Long ModAdd(Long A, Long B, Long M)
+        { 
+            Long C = A + B;
+            C = C % M;
+            return C;
+        }
+        public static Long ModSub(Long A, Long B, Long M)
+        {
+            Long C = A - B;
+            C = C % M;
+            return C;
+        }
+        public static Long ModMul(Long A, Long B, Long M)
+        {
+            Long C = A * B;
+            C = C % M;
+            return C;
+        }
+        public static Long ModSqr(Long A, Long M)
+        {
+            return ModMul(A, A, M);
+        }
+        public static Long ModDegree(Long A, Long B, Long M)
+        {
+            if (IsZero(B))
+            {
+                return new Long("1");
+            }
+            Long C;
+            int i1 = 0;
+            while ((B.Number[B.Number.Count - 1] >> i1) != 0)
+            {
+                i1++;
+            }
+            C = A;
+            for (int i = i1 - 2; i >= 0; i--)
+            {
+                C = ModSqr(C, M);
+                if ((B.Number[B.Number.Count - 1] & (1L << i)) != 0)
+                {
+                    C = ModMul(C, A, M);
+                }
+            }
+            for (int i = B.Number.Count - 2; i >= 0; i--)
+            {
+                for (int j = 31; j >= 0; j--)
+                {
+                    C = ModSqr(C, M);
+                    if ((B.Number[i] & (1L << j)) != 0)
+                    {
+                        C = ModMul(C, A, M);
+                    }
+                }
+            }
+            return C;
+        }
+
+        public static Long Bingcd(Long u, Long v)
+        {
+            int shift;
+            if (IsZero(u)) return v;
+            if (IsZero(v)) return u;
+            for (shift = 0; !IsZero(u) && !IsZero(v) && ((u.Number[0] | v.Number[0]) & 1) == 0; shift++)
+            {
+                u >>= 1;
+                v >>= 1;
+            }
+            while (!IsZero(u) && (u.Number[0] & 1) == 0)
+            {
+                u >>= 1;
+            }
+            do
+            {
+                while (!IsZero(v) && (v.Number[0] & 1) == 0)
+                {
+                    v >>= 1;
+                }
+                if (LongCmp(u, v, false) == 1)
+                {
+                    Long temp;
+                    temp = u;
+                    u = v;
+                    v = temp;
+                }
+                if (LongCmp(u, v, false) == 0)
+                {
+                    break;
+                }
+                v = v - u;
+            } 
+            while (!IsZero(v));
+            {
+                return u << shift;
+            }
         }
     }
 }
