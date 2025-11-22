@@ -1,4 +1,6 @@
 ﻿
+using System.Runtime.ExceptionServices;
+
 namespace SpRzOM
 {
 
@@ -354,74 +356,14 @@ namespace SpRzOM
         
         public static Long operator /(Long A, Long B)
         {
-            A.Negative = false;
-            B.Negative = false;
-            Long Q;
-            Long R;
-            long k = B.BitLength();
-            R = A;
-            Q = new Long("0");
-            for (int i = 1; i < A.Number.Count; i++)
-            {
-                Q.Number.Add(0);
-            }
-            long t;
-            Long C;
-            while (LongCmp(R, B, false) >= 0)
-            {
-                t = R.BitLength();
-                C = B << (int)(t - k);
-                if (LongCmp(R, C, false) == -1)
-                {
-                    t--;
-                    C = B << (int)(t - k);
-                }
-                R = R - C;
-                R.Negative = false;
-                Q.Number[(int)((t - k) / 32)] = Q.Number[(int)((t - k) / 32)] | (long)(1UL << (int)((t - k) % 32));
-            }
-            Q = RemoveEmpty(Q);
-            if (A.Negative != B.Negative)
-            {
-                Q.Negative = true;
-            }
-            return Q;
+            (Long C, Long D) = Div(A, B);
+            return C;
         }
 
         public static Long operator %(Long A, Long B)
         {
-            A.Negative = false;
-            B.Negative = false;
-            Long Q;
-            Long R;
-            long k = B.BitLength();
-            R = A;
-            Q = new Long("0");
-            for (int i = 1; i < A.Number.Count; i++)
-            {
-                Q.Number.Add(0);
-            }
-            long t;
-            Long C;
-            while (LongCmp(R, B, false) >= 0)
-            {
-                t = R.BitLength();
-                C = B << (int)(t - k);
-                if (LongCmp(R, C, false) == -1)
-                {
-                    t--;
-                    C = B << (int)(t - k);
-                }
-                R = R - C;
-                R.Negative = false;
-                Q.Number[(int)((t - k) / 32)] = Q.Number[(int)((t - k) / 32)] | (long)(1UL << (int)((t - k) % 32));
-            }
-            Q = RemoveEmpty(Q);
-            if (A.Negative != B.Negative)
-            {
-                Q.Negative = true;
-            }
-            return R;
+            (Long C, Long D) = Div(A, B);
+            return D;
         }
 
         public static (Long, Long) Div(Long A, Long B)
@@ -571,6 +513,10 @@ namespace SpRzOM
         }
         public static Long ModSub(Long A, Long B, Long M)
         {
+            if (LongCmp(A, B, false) == -1)
+            {
+                A += M;
+            }
             Long C = A - B;
             C = C % M;
             return C;
@@ -585,8 +531,22 @@ namespace SpRzOM
         {
             return ModMul(A, A, M);
         }
+        static Long BarretReduction(Long A, Long M, Long m, int k)
+        {
+            Long q = A >> ((k - 1));
+            q *= m;
+            q = q >> (k + 1);
+            Long r = A - (q * M);
+            while (LongCmp(r, M, false) >= 0)
+            {
+                r = r - M;
+            }
+            return r;
+        }
         public static Long ModDegree(Long A, Long B, Long M)
         {
+            int k = (int)M.BitLength();
+            Long m = (new Long("1") << (2 * k)) / M;
             if (IsZero(B))
             {
                 return new Long("1");
@@ -600,20 +560,20 @@ namespace SpRzOM
             C = A;
             for (int i = i1 - 2; i >= 0; i--)
             {
-                C = ModSqr(C, M);
+                C = BarretReduction(C * C, M, m, k);
                 if ((B.Number[B.Number.Count - 1] & (1L << i)) != 0)
                 {
-                    C = ModMul(C, A, M);
+                    C = BarretReduction(C * A, M, m, k);
                 }
             }
             for (int i = B.Number.Count - 2; i >= 0; i--)
             {
                 for (int j = 31; j >= 0; j--)
                 {
-                    C = ModSqr(C, M);
+                    C = BarretReduction(C * C, M, m, k);
                     if ((B.Number[i] & (1L << j)) != 0)
                     {
-                        C = ModMul(C, A, M);
+                        C = BarretReduction(C * A, M, m, k);
                     }
                 }
             }
