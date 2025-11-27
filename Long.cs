@@ -402,13 +402,33 @@ namespace SpRzOM
             return (Q, R);
         }
 
-        public long BitLength()
+        public bool GetBit(int n)
         {
-            if (Number.Count == 0)
+            int r = n / 32;
+            int i = n % 32;
+            if (r >= Number.Count)
             {
-                return 0;
+                return false;
             }
-            long k = (Number.Count - 1) * 32;
+            return ((Number[r] >> i) & 1) == 1;
+        }
+
+        public Long RemoveBit(int n = -1)
+        {
+            if (n == -1)
+            {
+                n = (int)BitLength();
+
+            }
+            int r = n / 32;
+            int i = n % 32;
+            Number[r] = Number[r] & (~(1L << i));
+            return RemoveEmpty(this);
+        }
+
+        public int BitLength()
+        {
+            int k = (Number.Count - 1) * 32;
             long n = Number[Number.Count - 1];
             while (n != 0)
             {
@@ -436,14 +456,7 @@ namespace SpRzOM
         public static bool IsZero(Long A)
         {
             A = RemoveEmpty(A);
-            if (A.Number.Count == 1 && A.Number[0] == 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return (A.Number.Count == 1 && A.Number[0] == 0);
         }
         public static Long Clone(Long A)
         {
@@ -458,7 +471,6 @@ namespace SpRzOM
             Long u = new Long();
             Long v = new Long();
             Long lcm = new Long();
-
             if (uv)
             {
                 Long[] t = new Long[10];

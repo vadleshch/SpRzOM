@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 using static SpRzOM.Long;
+using static SpRzOM.GField;
 
 Long RandomLong(int len)
 {
@@ -79,7 +80,7 @@ void MainTimers()
 
 MainTimers();
 
-Console.WriteLine("1 - Lab1; 2 - Lab2");
+Console.WriteLine("1 - Lab1; 2 - Lab2; 3 - Lab3");
 Long A;
 Long B;
 Long C;
@@ -196,9 +197,49 @@ try
                 Console.Write("A^BmodM=");
                 D = ModDegree(A, B, M);
                 Console.WriteLine(D.HexToString());
+                Console.Write("(B-A)modM=");
+                D = ModSub(B, A, M); Console.WriteLine(D.HexToString());
                 return;
             }
-            //break;
+        case "3":
+            while (true)
+            {
+                GField gf = new GField();
+                //Console.WriteLine("Уведіть шістнадцяткове А:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                str = "792d6ef9416cb2076ac2e6368471fda47e5a95c35208fc277169197530cfec614dcbf69";
+                A = new Long(str, 16);
+                //Console.WriteLine("Уведіть шістнадцяткове B:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                str = "56df1366d2e020579e22f67e66b8a4ee397db984f686bfa1d0ace4f5727d9cf9b6269d2";
+                B = new Long(str, 16);
+                //Console.WriteLine("Уведіть шістнадцяткове C:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                str = "4bca4fb7e3c9fb60d73c99a671842d3ce3e063c65c44a3761bc5f28e40594f157bea46";
+                C = new Long(str, 16);
+                Console.WriteLine("A + B");
+                Long Res = gf.ElSum(A, B);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A * B");
+                Res = gf.ElMul(A, B);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A ^ 2");
+                Res = gf.ElSqr(A);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A ^ С");
+                Res = gf.ElPow(A, C);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("Tr(A)");
+                Console.WriteLine(gf.ElTrace(A));
+                Console.WriteLine("!A");
+                Res = gf.ElInv(A);
+                Console.WriteLine(Res.HexToString());
+                return;
+            }
+        //break;
         default:
           break;
     }
