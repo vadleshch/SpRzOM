@@ -238,7 +238,6 @@ namespace SpRzOM
 
         public static Long operator <<(Long A, int n)
         {
-
             Long res = new Long();
             int words = n / 32;
             int bits = n % 32;
@@ -260,6 +259,25 @@ namespace SpRzOM
                 res.Number.Add((long)carry);
             }
             return res;
+        }
+
+        public static Long CML(Long A, int n, int len)
+        {
+            Long res = new Long();
+            n = n % len;
+            res = (A >> n) + (A <<(len - n));
+            int words = (len - 1) / 32;
+            while (res.Number.Count - 1 > words)
+            {
+                res.Number.RemoveAt(res.Number.Count - 1);
+            }
+            res.Number[res.Number.Count - 1] = res.Number[res.Number.Count - 1] & ((1L << (len - words * 32)) - 1);
+            return res;
+        }
+
+        public static Long CMR(Long A, int n, int len)
+        {
+            return CML(A, len - n % len, len);
         }
 
         public static int LongCmp(Long A, Long B, bool sign = true)

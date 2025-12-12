@@ -10,7 +10,7 @@ Long RandomLong(int len)
     Long A = new Long("0");
     int bits = len % 32;
     int words = len / 32;
-    for (int i = 1; i < words; i++)
+    for (int i = 0; i < words; i++)
     {
         A.Number.Add(0);
     }
@@ -31,56 +31,57 @@ void MainTimers()
     Stopwatch sw3 = new Stopwatch();
     Stopwatch sw4 = new Stopwatch();
     sw1.Start();
-    Long[,] Dataset = new Long[10, 201];
-    for (int i = 0; i < 10; i++)
+    Long[,] Dataset = new Long[1, 1001];
+    for (int i = 0; i < 1; i++)
     {
-        for (int j = 0; j < 201; j++)
+        for (int j = 0; j < 1001; j++)
         {
-            Dataset[i, j] = RandomLong((i + 1) * 100);
+            Dataset[i, j] = RandomLong(283);
         }
     }
     sw1.Stop();
     Console.WriteLine(sw1.ElapsedMilliseconds);
     sw1.Reset();
-
-    for (int i = 0; i < 10; i++)
+    GField gf1 = new GField();
+    for (int i = 0; i < 1; i++)
     {
         Long gcd;
         Long lcm;
         Long u;
         Long v;
+        int i1;
         sw1.Start();
-        for (int j = 0; j < 200; j++)
+        for (int j = 0; j < 1000; j++)
         {
-           (gcd, lcm, u, v) = Euclid(Dataset[i, j], Dataset[i, j + 1]);
+            gcd = gf1.ElPow(Dataset[i, j], Dataset[i, j + 1]);
         }
         sw1.Stop();
         sw2.Start();
-        for (int j = 0; j < 200; j++)
+        for (int j = 0; j < 1000; j++)
         {
-            gcd = Bingcd(Dataset[i, j], Dataset[i, j + 1]);
+            gcd = gf1.ElInv(Dataset[i, j]);
         }
         sw2.Stop();
-        //sw3.Start();
-        //for (int j = 0; j < 20000; j++)
-        //{
-        //    res = Dataset[i, j] * Dataset[i, j + 1];
-        //}
-        //sw3.Stop();
+        sw3.Start();
+        for (int j = 0; j < 1000; j++)
+        {
+           i1 = gf1.ElTrace(Dataset[i, j]);
+        }
+        sw3.Stop();
         //sw4.Start();
         //for (int j = 0; j < 20000; j++)
         //{
         //    res = Dataset[i, j] / Dataset[i, j + 1];
         //}
         //sw4.Stop();
-        Console.WriteLine($"{(i + 1) * 100}: Euclid {sw1.ElapsedMilliseconds} Bin {sw2.ElapsedMilliseconds}");
+        Console.WriteLine($"{(i + 1) * 100}: Pow {sw1.ElapsedMilliseconds} Inv {sw2.ElapsedMilliseconds} Trace {sw3.ElapsedMilliseconds}");
         sw1.Reset(); sw2.Reset(); sw3.Reset(); sw4.Reset();
     }
 }
 
-MainTimers();
+//MainTimers();
 
-Console.WriteLine("1 - Lab1; 2 - Lab2; 3 - Lab3");
+Console.WriteLine("1 - Lab1; 2 - Lab2; 3 - Lab3; 4 - Lab4");
 Long A;
 Long B;
 Long C;
@@ -157,15 +158,15 @@ try
                 Long v;
                 Long M;
                 Long D;
-                //Console.WriteLine("Уведіть шістнадцяткове А:");
-                //Console.Write(">");
-                //str = Console.ReadLine();
+                Console.WriteLine("Уведіть шістнадцяткове А:");
+                Console.Write(">");
+                str = Console.ReadLine();
                 str = "8692D3FE302469AE8984488668D86530CEA78D23172AD0F8AE0B7864545F3189FA50F90EBD40071BD5B0D1B9ADF82EEEA121138B95DF363CF89469980F23D61F50E16DB91DF15E86B1870E719FD710B3783A217F78E1560A1130E49FCD9C9AD0E0190EF0D27E841B70BD05BF666697E80A5882AB6DAD4B625BB01F755E2E981A";
                 A = new Long(str, 16);
                 Console.WriteLine(A.HexToString());
-                //Console.WriteLine("Уведіть шістнадцяткове B:");
-                //Console.Write(">");
-                //str = Console.ReadLine();
+                Console.WriteLine("Уведіть шістнадцяткове B:");
+                Console.Write(">");
+                str = Console.ReadLine();
                 str = "1A32BA32AD1F22E2E43535524CC668C570A471534664AC4CFBAC765EE7E902152571DA2B7347BEC45EBBAE7054E2F8C7227FB7F60AD9ACE7D3ED9DA24E92BB49A844D92F3DED8ECCFF053C83A57C25F5D10C9A85C94C78E4D29071FFEE27035698B768286B6B15DF003A5F53571055D83FE18DE0D00AC295F4BF4D08B668C83F";
                 B = new Long(str, 16);
                 (gcd, lcm, u, v) = Euclid(A, B, true);
@@ -177,6 +178,7 @@ try
                 Console.WriteLine(u.HexToString());
                 Console.WriteLine("v: ");
                 Console.WriteLine(v.HexToString());
+                Console.WriteLine(Bingcd(A, B).HexToString());
                 //Console.WriteLine("Уведіть шістнадцяткове M:");
                 //Console.Write(">");
                 //str = Console.ReadLine();
@@ -225,6 +227,7 @@ try
                 Console.WriteLine(Res.HexToString());
                 Console.WriteLine("A * B");
                 Res = gf.ElMul(A, B);
+
                 Console.WriteLine(Res.HexToString());
                 Console.WriteLine("A ^ 2");
                 Res = gf.ElSqr(A);
@@ -238,6 +241,76 @@ try
                 Res = gf.ElInv(A);
                 Console.WriteLine(Res.HexToString());
                 return;
+            }
+        case "4":
+            while (true)
+            {
+                NBGField nbgf = new NBGField();
+                //Console.WriteLine("Уведіть шістнадцяткове А:");
+                //Console.Write(">");
+                //str = Console.ReadLine();
+                //str = "7f34f843a970dcb34187ea965a91ce612";
+                //A = new Long(str, 16);
+                ////Console.WriteLine("Уведіть шістнадцяткове B:");
+                ////Console.Write(">");
+                ////str = Console.ReadLine();
+                //str = "7f34f843a970dcb34187ea965a91ce612";
+                //B = new Long(str, 16);
+                ////Console.WriteLine("Уведіть шістнадцяткове C:");
+                ////Console.Write(">");
+                ////str = Console.ReadLine();
+                //str = "7fc0f4780ae4b4d08a15c368375414d59";
+                //C = new Long(str, 16);
+                A = RandomLong(131);
+                B = RandomLong(131);
+                C = RandomLong(131);
+                Console.WriteLine("A");
+                Console.WriteLine(A.HexToString());
+                Console.WriteLine("B");
+                Console.WriteLine(B.HexToString());
+                Console.WriteLine("C");
+                Console.WriteLine(C.HexToString());
+                Console.WriteLine("1");
+                Console.WriteLine(nbgf.GetOne().HexToString());
+                Console.WriteLine("A + B");
+                Long Res = nbgf.ElSum(A, B);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A * B");
+                Res = nbgf.ElMul(A, B);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A * 1");
+                Res = nbgf.ElMul(A, nbgf.GetOne());
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("(A + B) * C");
+                Res = nbgf.ElMul(nbgf.ElSum(A, B), C);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("B * C + C * A");
+                Res = nbgf.ElSum(nbgf.ElMul(B, C), nbgf.ElMul(C, A));
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("sqr(A)");
+                Res = nbgf.ElSqr(A);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A * A");
+                Res = nbgf.ElMul(A, A);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A ^ 2");
+                Res = nbgf.ElPow(A, new Long("2"));
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A ^ С");
+                Res = nbgf.ElPow(A, C);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("Tr(A)");
+                Console.WriteLine(nbgf.ElTrace(A));
+                Console.WriteLine("A^(-1)");
+                Res = nbgf.ElInv(A);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A * A^(-1)");
+                Res = nbgf.ElMul(Res, A);
+                Console.WriteLine(Res.HexToString());
+                Console.WriteLine("A * 0");
+                Res = nbgf.ElMul(nbgf.GetZero(), A);
+                Console.WriteLine(Res.HexToString());
+                Console.ReadKey();
             }
         //break;
         default:
