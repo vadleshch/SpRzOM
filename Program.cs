@@ -36,13 +36,13 @@ void MainTimers()
     {
         for (int j = 0; j < 1001; j++)
         {
-            Dataset[i, j] = RandomLong(283);
+            Dataset[i, j] = RandomLong(131);
         }
     }
     sw1.Stop();
     Console.WriteLine(sw1.ElapsedMilliseconds);
     sw1.Reset();
-    GField gf1 = new GField();
+    NBGField gf1 = new NBGField();
     for (int i = 0; i < 1; i++)
     {
         Long gcd;
@@ -51,21 +51,21 @@ void MainTimers()
         Long v;
         int i1;
         sw1.Start();
-        for (int j = 0; j < 1000; j++)
+        for (int j = 0; j < 100; j++)
         {
             gcd = gf1.ElPow(Dataset[i, j], Dataset[i, j + 1]);
         }
         sw1.Stop();
         sw2.Start();
-        for (int j = 0; j < 1000; j++)
+        for (int j = 0; j < 100; j++)
         {
             gcd = gf1.ElInv(Dataset[i, j]);
         }
         sw2.Stop();
         sw3.Start();
-        for (int j = 0; j < 1000; j++)
+        for (int j = 0; j < 100; j++)
         {
-           i1 = gf1.ElTrace(Dataset[i, j]);
+            gcd = gf1.ElMul(Dataset[i, j], Dataset[i, j + 1]);
         }
         sw3.Stop();
         //sw4.Start();
@@ -74,12 +74,12 @@ void MainTimers()
         //    res = Dataset[i, j] / Dataset[i, j + 1];
         //}
         //sw4.Stop();
-        Console.WriteLine($"{(i + 1) * 100}: Pow {sw1.ElapsedMilliseconds} Inv {sw2.ElapsedMilliseconds} Trace {sw3.ElapsedMilliseconds}");
+        Console.WriteLine($"{(i + 1) * 100}: Pow {sw1.ElapsedMilliseconds} Inv {sw2.ElapsedMilliseconds} Mul {sw3.ElapsedMilliseconds}");
         sw1.Reset(); sw2.Reset(); sw3.Reset(); sw4.Reset();
     }
 }
 
-//MainTimers();
+MainTimers();
 
 Console.WriteLine("1 - Lab1; 2 - Lab2; 3 - Lab3; 4 - Lab4");
 Long A;

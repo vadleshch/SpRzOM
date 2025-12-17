@@ -14,7 +14,7 @@ namespace SpRzOM
         static int m = 131;
         static int[,] Lambda = new int[m, m];
         static Long Zero = new Long("0");
-        static Long One = new Long(new string('1', 131), 2);
+        static Long One = new Long(new string('1', m), 2);
         public NBGField()
         {
             int[] twos = new int[m];
